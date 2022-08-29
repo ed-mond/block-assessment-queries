@@ -1,0 +1,53 @@
+#Which month has the highest count of valid users created?
+
+#Initial query to get table of all valid users
+
+SELECT * FROM contact
+JOIN block_user
+ON contact.user_id = block_user.user_id
+/* Inner Join removes all rows with a null in the user_id */
+JOIN email
+ON contact.user_id = email.user_id
+/* Inner Join removes all rows without an email address */
+WHERE hashed_email NOT LIKE '%@block%'
+/* Removed all emails associated with BLOCK */
+AND first_name NOT LIKE '%test%'
+AND last_name NOT LIKE '%test%';
+/* Removed all rows with "test" in first or last names */
+
+
+
+#Created a new table of valid users for convenience
+
+CREATE TABLE valid_users AS
+SELECT contact.idx, contact.contact_id, contact.user_id, contact.first_name, contact.last_name,
+contact.property_utm_source, contact.property_hdyh, contact.property_city, contact.property_state,
+contact.property_serviceable_location, block_user.create_date, email.hashed_email
+FROM contact
+JOIN block_user
+ON contact.user_id = block_user.user_id
+JOIN email
+ON contact.user_id = email.user_id
+WHERE hashed_email NOT LIKE '%@block%'
+AND first_name NOT LIKE '%test%'
+AND last_name NOT LIKE '%test%';
+
+
+
+#To pull a table of valid users grouped by year and month
+
+SELECT
+EXTRACT(YEAR from create_date) AS user_year,
+EXTRACT(MONTH from create_date) AS user_month,
+COUNT(DISTINCT user_id)
+FROM valid_users
+GROUP BY user_year, user_month
+
+
+#To pull a table of valid users grouped by month only
+
+SELECT
+EXTRACT(MONTH from create_date) AS user_month,
+COUNT(DISTINCT user_id)
+FROM valid_users
+GROUP BY user_month
