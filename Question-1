@@ -1,6 +1,6 @@
-#Which month has the highest count of valid users created?
+# Which month has the highest count of valid users created?
 
-#Initial query to get table of all valid users
+# Initial query to get table of all valid users
 
 SELECT * FROM contact
 JOIN block_user
@@ -17,7 +17,7 @@ AND last_name NOT LIKE '%test%';
 
 
 
-#Created a new table of valid users for convenience
+# Created a new table of valid users for convenience
 
 CREATE TABLE valid_users AS
 SELECT contact.idx, contact.contact_id, contact.user_id, contact.first_name, contact.last_name,
@@ -34,7 +34,7 @@ AND last_name NOT LIKE '%test%';
 
 
 
-#To pull a table of valid users grouped by year and month
+# To pull a table of valid users grouped by year and month
 
 SELECT
 EXTRACT(YEAR from create_date) AS user_year,
@@ -44,7 +44,7 @@ FROM valid_users
 GROUP BY user_year, user_month
 
 
-#To pull a table of valid users grouped by month only
+# To pull a table of valid users grouped by month only
 
 SELECT
 EXTRACT(MONTH from create_date) AS user_month,
