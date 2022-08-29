@@ -1,0 +1,26 @@
+# Which month brought in the highest gross deal value?
+
+# Query to pull count/sum/avg from the 'deal' table
+
+SELECT
+EXTRACT(YEAR from closed_won_date) AS deal_year,
+EXTRACT(MONTH from closed_won_date) AS deal_month,
+COUNT(DISTINCT deal_id) AS transactions,
+/*Count of transactions*/
+SUM(deal_value_usd) AS gross,
+/*Sum of deal gross*/
+ROUND(AVG(deal_value_usd), 2) AS avg_gross
+/*Average gross per number of transactions*/
+FROM deal
+GROUP BY deal_year, deal_month
+
+
+# Same as above, but grouping by month only
+
+SELECT
+EXTRACT(MONTH from closed_won_date) AS deal_month,
+COUNT(DISTINCT deal_id) AS transactions,
+SUM(deal_value_usd) AS gross,
+ROUND(AVG(deal_value_usd), 2) AS avg_gross
+FROM deal
+GROUP BY deal_month
