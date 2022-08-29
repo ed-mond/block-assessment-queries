@@ -1,0 +1,31 @@
+# What percentage of “closed won” deals does each city account for?
+
+
+# Check if the valid users have repeat contact_ids
+
+SELECT
+COUNT(contact_id) AS all_ids,
+COUNT(DISTINCT contact_id) AS unique_ids
+FROM valid_users
+/* 21056 total contact_id vs 17642 unique contact_id */
+
+
+# Create a new joined table of closed deals made by valid users (also to get total)
+
+CREATE TABLE closed_deals AS
+SELECT DISTINCT valid_users.contact_id, LOWER(valid_users.property_city) AS city, deal_contact.deal_id, deal.closed_won_date
+FROM valid_users
+JOIN deal_contact
+ON valid_users.contact_id = deal_contact.contact_id
+JOIN deal
+ON deal_contact.deal_id = deal.deal_id
+WHERE closed_won_date IS NOT null
+/*Total closed deals = 527*/
+
+
+#  Pull table of transactions per city
+
+SELECT city, COUNT(contact_id) AS transactions
+FROM closed_deals
+GROUP BY city
+ORDER BY transactions DESC
