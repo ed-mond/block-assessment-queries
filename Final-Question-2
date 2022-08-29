@@ -1,0 +1,51 @@
+# How much quarterly business has each Source generated for Block? Which sources are performing above or below their historical monthly benchmarks?
+
+
+# Create new table with sources, deal values, and date by quarter
+
+CREATE TABLE deal_source AS
+SELECT
+EXTRACT(YEAR FROM closed_won_date) AS deal_year,
+EXTRACT(QUARTER FROM closed_won_date) AS deal_qtr,
+valid_users.contact_id, valid_users.property_utm_source,
+deal_contact.deal_id, deal.closed_won_date, deal.deal_value_usd
+FROM valid_users
+JOIN deal_contact
+ON valid_users.contact_id = deal_contact.contact_id
+JOIN deal
+ON deal_contact.deal_id = deal.deal_id
+WHERE closed_won_date IS NOT null
+AND valid_users.property_utm_source IS NOT null
+
+
+# Get table for quarterly gross based on the source
+
+SELECT deal_year, deal_qtr, property_utm_source, SUM(deal_value_usd) AS gross
+FROM deal_source
+GROUP BY deal_year, deal_qtr, property_utm_source
+ORDER BY deal_year ASC, deal_qtr ASC
+
+
+# Create table to get gross of sources by month
+
+CREATE TABLE deal_monthly AS
+SELECT
+EXTRACT(YEAR FROM closed_won_date) AS deal_year,
+EXTRACT(month FROM closed_won_date) AS deal_month,
+valid_users.contact_id, valid_users.property_utm_source,
+deal_contact.deal_id, deal.closed_won_date, deal.deal_value_usd
+FROM valid_users
+JOIN deal_contact
+ON valid_users.contact_id = deal_contact.contact_id
+JOIN deal
+ON deal_contact.deal_id = deal.deal_id
+WHERE closed_won_date IS NOT null
+AND valid_users.property_utm_source IS NOT null
+
+
+# Get table for monthly gross based on the source
+
+SELECT deal_year, deal_month, property_utm_source, SUM(deal_value_usd) AS gross
+FROM deal_monthly
+GROUP BY deal_year, deal_month, property_utm_source
+ORDER BY deal_year ASC, deal_month ASC
